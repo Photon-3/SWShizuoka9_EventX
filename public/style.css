@@ -1,0 +1,107 @@
+/* public/style.css */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f7f6;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    max-width: 700px;
+    width: 100%;
+    background-color: #fff;
+    padding: 25px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+.url-box {
+    background-color: #ecf0f1;
+    padding: 15px;
+    border-radius: 4px;
+    margin-top: 20px;
+    word-wrap: break-word;
+}
+
+.url-box p {
+    margin: 0 0 10px 0;
+    font-weight: bold;
+}
+
+.url-box a {
+    color: #2980b9;
+    text-decoration: none;
+}
+.url-box a:hover {
+    text-decoration: underline;
+}
+
+#booth-list, #view-list {
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+#booth-list li, #view-list li {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #eee;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.congestion-status {
+    padding: 5px 15px;
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+    min-width: 80px;
+    text-align: center;
+}
+.status-1 { background-color: #2ecc71; } /* 空き */
+.status-2 { background-color: #f39c12; } /* やや混雑 */
+.status-3 { background-color: #e74c3c; } /* 混雑 */
+
+.congestion-buttons button {
+    margin: 0 5px;
+    padding: 10px 15px;
+    font-size: 14px;
+}

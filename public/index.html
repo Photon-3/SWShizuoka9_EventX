@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>イベント管理ページ作成</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>混雑状況共有ツール</h1>
+        <h2>イベント管理ページを作成</h2>
+        <p>学園祭や地域祭の名称を入力してください。</p>
+        <input type="text" id="eventName" placeholder="例：〇〇学園祭2025">
+        <button onclick="handleCreateEvent()">管理ページを作成する</button>
+    </div>
+
+    <script>
+        async function handleCreateEvent() {
+            const eventName = document.getElementById('eventName').value;
+            if (!eventName) {
+                alert('イベント名を入力してください。');
+                return;
+            }
+
+            const response = await fetch('/api/events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ eventName })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // 作成された管理ページのURLに移動
+                window.location.href = `/manage.html?adminId=${data.adminId}`;
+            } else {
+                alert('イベント作成に失敗しました。');
+            }
+        }
+    </script>
+</body>
+</html>

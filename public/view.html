@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>混雑状況</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="event-name-title">混雑状況</h1>
+        <ul id="view-list">
+            </ul>
+    </div>
+
+    <script>
+        const publicId = new URLSearchParams(window.location.search).get('publicId');
+        const congestionMap = {
+            1: { text: '空き', className: 'status-1' },
+            2: { text: 'やや混雑', className: 'status-2' },
+            3: { text: '混雑', className: 'status-3' }
+        };
+
+        async function fetchAndUpdateView() {
+            if (!publicId) {
+                document.body.innerHTML = '<h1>無効なアクセスです</h1>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/events/${publicId}`);
+                if (!response.ok) {
+                    throw new Error('イベントが見つかりません');
+                }
+                const eventData = await response.json();
+
+                document.getElementById('event-name-title').textContent = `${eventData.eventName} 混雑状況`;
+                const listElement = document.getElementById('view-list');
+                listElement.innerHTML = ''; // リストをクリア
+
+                if (eventData.booths.length === 0) {
+                    listElement.innerHTML = '<p>まだ出店情報がありません。</p>';
+                    return;
+                }
+
+                eventData.booths.forEach(booth => {
+                    const li = document.createElement('li');
+                    const status = congestionMap[booth.congestion];
+                    li.innerHTML = `
+                        <div>
+                            <strong>${booth.name}</strong>
+                            <small>(${booth.location})</small>
+                        </div>
+                        <div class="congestion-status ${status.className}">
+                            ${status.text}
+                        </div>
+                    `;
+                    listElement.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('view-list').innerHTML = '<p>情報の取得に失敗しました。ページを再読み込みしてください。</p>';
+            }
+        }
+
+        // ページ読み込み時に初回データを取得
+        window.onload = fetchAndUpdateView;
+
+        // 10秒ごとに自動で情報を更新する
+        setInterval(fetchAndUpdateView, 10000);
+    </script>
+</body>
+</html>

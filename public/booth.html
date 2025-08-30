@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>混雑度 更新</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>混雑度を更新</h1>
+        <p>現在の状況に最も近いボタンをタップしてください。</p>
+        <div class="congestion-buttons">
+            <button class="status-1" onclick="updateCongestion(1)">空いています</button>
+            <button class="status-2" onclick="updateCongestion(2)">やや混雑</button>
+            <button class="status-3" onclick="updateCongestion(3)">混雑</button>
+        </div>
+        <p id="feedback" style="margin-top: 20px; font-weight: bold; text-align: center;"></p>
+    </div>
+
+    <script>
+        const boothId = new URLSearchParams(window.location.search).get('boothId');
+
+        async function updateCongestion(level) {
+            if (!boothId) {
+                alert('無効なURLです。');
+                return;
+            }
+
+            const response = await fetch(`/api/booths/${boothId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ congestion: level })
+            });
+            
+            const feedbackEl = document.getElementById('feedback');
+            if (response.ok) {
+                const statusText = {1: '空いています', 2: 'やや混雑', 3: '混雑'};
+                feedbackEl.textContent = `「${statusText[level]}」に更新しました！`;
+                feedbackEl.style.color = 'green';
+            } else {
+                feedbackEl.textContent = '更新に失敗しました。ページを再読み込みしてください。';
+                feedbackEl.style.color = 'red';
+            }
+
+            // 2秒後にメッセージを消す
+            setTimeout(() => { feedbackEl.textContent = ''; }, 2000);
+        }
+    </script>
+</body>
+</html>

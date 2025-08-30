@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者ページ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="event-name-title">イベント管理</h1>
+
+        <div class="url-box">
+            <p>🔗 共有用URL</p>
+            <p><strong>【来場者向け】閲覧用URL</strong><br>このURLを来場者に共有してください。</p>
+            <a id="public-url" href="" target="_blank"></a>
+            <p style="margin-top: 15px;"><strong>【主催者・出店者向け】管理用URL</strong><br>このページです。ブックマークしてください。</p>
+            <a id="admin-url" href=""></a>
+        </div>
+        
+        <h2>出店を登録する</h2>
+        <input type="text" id="boothName" placeholder="出店名（例：やきそば屋）">
+        <input type="text" id="location" placeholder="場所（例：体育館前）">
+        <button onclick="addBooth()">出店を登録</button>
+
+        <h2>登録済みの出店一覧</h2>
+        <ul id="booth-list">
+            </ul>
+    </div>
+
+    <script>
+        const adminId = new URLSearchParams(window.location.search).get('adminId');
+
+        // ページ読み込み時にイベント情報を取得・表示
+        window.onload = async () => {
+            if (!adminId) {
+                document.body.innerHTML = '<h1>無効なアクセスです</h1>';
+                return;
+            }
+            fetchAndRenderBooths();
+        };
+
+        async function fetchAndRenderBooths() {
+            const response = await fetch(`/api/manage/${adminId}`);
+            if (!response.ok) {
+                document.body.innerHTML = '<h1>イベントが見つかりません</h1>';
+                return;
+            }
+
+            const eventData = await response.json();
+            
+            // イベント名を設定
+            document.getElementById('event-name-title').textContent = `【${eventData.eventName}】管理者ページ`;
+            
+            // URLを設定
+            const publicUrl = `${window.location.origin}/view.html?publicId=${eventData.publicId}`;
+            document.getElementById('public-url').href = publicUrl;
+            document.getElementById('public-url').textContent = publicUrl;
+
+            const adminUrl = window.location.href;
+            document.getElementById('admin-url').href = adminUrl;
+            document.getElementById('admin-url').textContent = adminUrl;
+
+
+            // 出店リストをレンダリング
+            const listElement = document.getElementById('booth-list');
+            listElement.innerHTML = ''; // リストをクリア
+            if (eventData.booths.length === 0) {
+                listElement.innerHTML = '<p>まだ出店が登録されていません。</p>';
+            } else {
+                eventData.booths.forEach(booth => {
+                    const li = document.createElement('li');
+                    const boothUrl = `${window.location.origin}/booth.html?boothId=${booth.id}`;
+                    li.innerHTML = `
+                        <div>
+                            <strong>${booth.name}</strong> (${booth.location})<br>
+                            <small>混雑度更新用URL: <a href="${boothUrl}" target="_blank">${boothUrl}</a></small>
+                        </div>
+                    `;
+                    listElement.appendChild(li);
+                });
+            }
+        }
+
+        async function addBooth() {
+            const boothName = document.getElementById('boothName').value;
+            const location = document.getElementById('location').value;
+
+            if (!boothName || !location) {
+                alert('出店名と場所を入力してください。');
+                return;
+            }
+
+            const response = await fetch(`/api/events/${adminId}/booths`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ boothName, location })
+            });
+
+            if (response.ok) {
+                // フォームをクリア
+                document.getElementById('boothName').value = '';
+                document.getElementById('location').value = '';
+                // リストを再描画
+                fetchAndRenderBooths();
+            } else {
+                alert('出店の登録に失敗しました。');
+            }
+        }
+    </script>
+</body>
+</html>
