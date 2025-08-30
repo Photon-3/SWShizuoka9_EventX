@@ -1,0 +1,2 @@
+# SWShizuoka9_EventX
+StartupWeekend静岡9thで唯一魚拓のとれるチームです。
