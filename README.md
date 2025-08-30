@@ -10,6 +10,7 @@ StartupWeekend静岡9thで唯一魚拓のとれるチームです。
 
 #### 開発を行うためには
 ```sh
+npm install express
 git clone https://github.com/Photon-3/SWShizuoka9_EventX.git
 cd SWShizuoka9_EventX
 node server.js
